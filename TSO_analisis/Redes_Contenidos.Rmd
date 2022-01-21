@@ -1,0 +1,326 @@
+---
+title: |
+  Informe Consultoría
+author: Camila Guzmán Olivos
+date: 10 de Enero
+output:
+  bookdown::pdf_document2:
+    toc: no
+header-includes: 
+- |
+    ```{=latex}
+    \usepackage{fancyhdr}
+    \pagestyle{fancy}
+    \fancyhead[L]{Consultoría Universidad Santo Tomás}
+    \usepackage{float}
+    \usepackage[spanish]{babel}
+    \usepackage{multicol}
+    \usepackage{multirow}
+    \usepackage{authblk}
+    %\usepackage[colorlinks=true]{hyperref}
+    \setlength\headheight{15pt}
+
+    \hypersetup{
+        colorlinks=true,
+        linkcolor=blue,
+        filecolor=magenta,      
+        urlcolor=blue,
+    }
+    
+    \floatplacement{figure}{H}
+    ```
+
+
+nocite: '@*'
+---
+
+
+# Antecedentes
+
+En el marco del Proceso de autoevaluación de la Escuela de Trabajo Social UST, el equipo de pares acreditadores de Agencia Qualitas señala en el informe de salida lo siguiente:
+
+*"El plan de estudios de la carrera es de reciente implementación (desde 2018) y busca atender algunas deficiencias identificadas en el plan anterior. En particular, **la reiteración de contenidos de algunos cursos**, los retrasos en la titulación, y la carga horaria que era algo excesiva para las muchas estudiantes que debían compatibilizarla con las responsabilidades familiares y laborales. Estas modificaciones fueron posibles pues la carrera desarrolla revisiones permanentes de los procesos de formación, lo cual es reconocido por sus autoridades como una de las virtudes de la carrera, y refleja un compromiso del equipo con la propuesta formativa y por vincularse activamente con estos procesos. En general los profesores valoran este nuevo plan, destacando que las modificaciones recientes permiten un mayor ordenamiento curricular. Se advierte, sin embargo, que aún **no hay evidencia sólida de que estos problemas se hayan solucionado**, por lo que la carrera debe mirar con atención el desarrollo de este plan de estudios" (Informe Qualitas Pag 75)*
+
+La Escuela Nacional da respuesta a este requerimiento incorporando dentro del plan de mejoramiento de la Escuela 2021-2022 una consultoría orienta a la revisión de contenidos de cada uno de las asignaturas involucradas dentro del plan vigente (12-12V). 
+
+# Objetivos
+
+## Objetivo General
+
+Identificar reiteraciones de contenidos en los programas de asignaturas del Plan 12. 
+
+## Objetivos Específicos
+
+OE1: Identificar inserción de contenidos de programas de línea por plan de formación.
+
+OE2: Establecer relaciones entre contenidos considerando sus competencias específicas y líneas formativas del plan de estudios. 
+
+OE3: Identificar reiteraciones de contenidos por Plan de formación, Competencias específicas y Nivel de Dominio Formativos por cada línea de formación del plan 12.
+
+# Productos
+
+De acuerdo con los objetivos de la consultoría se esperan los siguientes productos:
+
+- Análisis documental del plan de estudios, traducción educativa, especificaciones de la carrera, malla curricular y programas de asignatura.
+
+- Levantamiento de redes de contenidos de asignaturas en función al análisis documental al menos al nivel de líneas de formación.
+
+- Desarrollo de una red de contenidos de asignaturas general para el plan de estudios. 
+
+- Identificación de posibles reiteraciones de contenidos de las asignaturas, junto con el análisis de los niveles de logro de aprendizaje y los niveles de dominio formativo de las competencias involucradas. 
+
+
+```{r setup, include = FALSE, echo=FALSE, comment=" "}
+setwd("~/Desktop/Santo Tomás/TSO_analisis")
+knitr::opts_chunk$set(echo = TRUE, comment = " ")
+```
+
+# Diseño Metodológico
+
+Según los productos requeridos en esta consultoría se comenzó por construir las bases de datos que nos permitirán levantar la red entre contenidos. 
+
+Estas bases de datos son las que definirán **los nodos y los enlaces** de la red.
+
+## Descripción de las bases
+
+### Base para nodos
+
+La base que contiene los atributos de los nodos presenta las variables descriptivas de los contenidos y los resultados de aprendizaje 
+[(Click aquí para ver la base de nodos completa)](https://docs.google.com/spreadsheets/d/e/2PACX-1vSv0SKs6VZTRfHvTiS_1ZlIiMkLs1OL2kh8-ya_DO70KZRw3JazhK1IAdnrBanjNURKnwq4VDbXWcBH/pubhtml?gid=1857974247&single=true). Estas variables (que llamamos atributos de los nodos) son las siguientes: 
+
+- **id**: Número de identificación de cada contenido o resultado de aprendizaje que fue asignado según el orden de ingreso en la base de datos.
+- **Label**: Texto que describe el contenido o el resultado de apredizaje.
+- **Tipo**: `Contenido` o `R_A` (Resultado de Aprendizaje).
+- **Asignatura**: Código `TSO` de cada asignatura.
+- **Unidad**: `1`, `2` o `3`.
+- **Semestre**: Número entre `1` y `9`.
+- **Competencia**: Número entre `1` y `9` dependiendo de la competencia específica del Perfil de Egreso.
+    - `1`. Diagnosticar necesidades y capacidades de los sujetos de intervención, con el fin de proponer soluciones integrales a los problemas sociales.
+    - `2`. Diseñar, ejecutar y evaluar procesos de intervención social de manera innovadora, para mejorar las condiciones de vida de los diferentes actores sociales.
+    - `3`. Formular, gestionar y evaluar proyectos y programas sociales.
+    - `4`. Implementar, analizar y evaluar políticas sociales a fin de contribuir al desarrollo local y social del país.
+    - `5`. Gestionar recursos y redes sociales para promover intervenciones de calidad.
+    - `6`. Diseñar, ejecutar y difundir investigaciones relevantes en el ámbito de las ciencias sociales, para generar conocimiento pertinente sobre la realidad social.
+    - `7`. Analizar de manera crítica y compleja las diversas realidades sociales a la luz de los distintos enfoques teóricos de las ciencias sociales y humanidades.
+    - `8`. Contribuir al desarrollo disciplinario apropiándose de una identidad como trabajadores sociales, asumiendo los desafíos presentes y futuros de la profesión.
+    - `9`. Actuar sobre la base de los principios éticos profesionales del Trabajo Social, con especial énfasis en el desarrollo de actitud proactiva, empática y asertiva, responsabilidad social, liderazgo de procesos de transformación social y la valoración de las capacidades del ser humano.
+- **Nivel_Dominio_Formativo**: `Basico`, `Intermedio` o `Avanzado`.
+- **Ciclo_formativo**: `Básico` o `Profesional`.
+- **Nivel_logro_Aprendizaje:** Códigos alpha-numéricos según taxonomía de Anderson: 
+    - `N1 – Memorizar` 
+    - `N2 – Comprender` 
+    - `N3 – Aplicar` 
+    - `N4 – Analizar`
+    - `N5 – Evaluar`
+    - `N6 – Crear`
+
+- **Línea_Formativa:**: `Ciencias Sociales`, `Disciplinar`, `Investigación`, `Políticas Sociales` y `Práctica`.
+
+Los atributos se escogieron con el fin de comparar los contenidos según las competencias específicas y líneas formativas del plan de estudios como lo indica el OE2.
+
+### Base para enlaces
+
+Esta base es la que define los enlaces de la red. [(Ver base de enlaces entre contenidos aquí)](https://docs.google.com/spreadsheets/d/e/2PACX-1vSv0SKs6VZTRfHvTiS_1ZlIiMkLs1OL2kh8-ya_DO70KZRw3JazhK1IAdnrBanjNURKnwq4VDbXWcBH/pubhtml?gid=103313685&single=true)
+
+Los atributos referentes a estos enlaces son 
+
+- **Source**: Corresponde al `id` del nodo (contenido o resultado de aprendizaje) desde donde comienza el enlace.
+
+- **Target**: Corresponde al `id` del nodo donde termina el enlace.
+
+- **weight**: Corresponde a un peso asignado según la intersección de palabras entre contenidos y se calcula como
+
+$$\dfrac{|\operatorname{label(\text{Source}) \cap \operatorname{label}(\text{Target})}|}{\min(|\operatorname{label(\text{Source})}|,|\operatorname{label(\text{Target})}|)}$$
+
+
+- **Interseccion**: Palabras en común que tienen los contenidos involucrados en `Source` y `Target`.
+
+- **n_inter**: Cantidad de palabras en común que tienen los contenidos definidos en `Source` y `Target`.
+
+La base nos entrega los `id` de los contenidos que están relacionados y qué tipo de relación tienen.
+
+## Red Inicial
+
+La red se conforma con dos tipos de objetos: los **nodos** y los **enlaces**. En este caso, los nodos son los resultados de aprendizaje y los contenidos y se forman enlaces entre nodos si es que dos de los nodos cumplen alguna relación. El foco principal para crear la red es definir qué relaciones generan un enlace entre nodos. Para esto se diferenciaron dos tipos de enlaces: 
+
+- Según lo conversado al inicio de la consultoría, se consideró una primera selección de enlaces generado por los contenidos pertenecientes a cada resultado de aprendizaje de las asignaturas de las líneas de formación definidas en el Plan de Estudio. \newline En el informe anterior se presentó solo la línea de Políticas Sociales (figura \ref{fig:fig1}). La figura \ref{fig2:fig2} describe los **enlaces de pertenencia** para las demás líneas de formación diferenciando entre asignaturas y Resultados de aprendizaje (círculo si el nodo contiene el texto de un contenido).
+
+```{r fig1,  echo = FALSE, fig.align='center', out.width = '70%', fig.cap="\\label{fig1:fig1} Enlaces de pertenencia diferenciado por asignatura"}
+knitr::include_graphics("Gráficos/Políticas_sociales.png", dpi=NA)
+```
+
+```{r fig2,  echo = FALSE, fig.align='center', out.width="50%", out.height="20%", fig.show='hold', fig.cap="\\label{fig2:fig2} Cada conglomerado representa un resultado de aprendizaje ligado a sus contenidos."}
+knitr::include_graphics(c("Gráficos/ciencias_sociales.png","Gráficos/disciplinar.png"))
+knitr::include_graphics(c("Gráficos/investigación.png","Gráficos/práctica.png"))
+```
+
+En el siguiente cuadro se resume la información visual que otorgan las figuras \ref{fig1:fig1} y \ref{fig2:fig2}. 
+
+Table:  Cantidad de asignaturas y de nodos por cada línea de formación
+
+|Línea Formativa    | Asignaturas| R. A| Contenidos| Nodos      |
+|:------------------|-----------:|----:|----------:|-----------:|
+|Ciencias Sociales  |           4|   32|        185|         217|
+|Disciplinar        |           8|   51|        260|         311|
+|Investigación      |           7|   80|        199|         279|
+|Políticas Sociales |           7|   49|        250|         299|
+|Práctica           |           7|   53|        203|         256|
+|                   |            |     |           |------------|
+|                   |            |     |           | Total: 1362|
+
+- El otro tipo de enlace se forma cuando dos contenidos tiene al menos una palabra en común. Como nos interesa analizar la repetición de contenidos, consideraremos un **enlace por Intersección** cuando dos nodos tienen al menos tres palabras en común. De esta manera tenemos una red inicial con 732 nodos y 2248 enlaces [(Ver base de enlaces entre contenidos con al menos tres palabras en común aquí)](https://docs.google.com/spreadsheets/d/e/2PACX-1vSv0SKs6VZTRfHvTiS_1ZlIiMkLs1OL2kh8-ya_DO70KZRw3JazhK1IAdnrBanjNURKnwq4VDbXWcBH/pubhtml?gid=1677407114&single=true). En la figura \ref{fig3:fig3} se puede observar que la cantidad de enlaces es más alta entre cada línea formativa. Pero 
+
+```{r fig3,  echo = FALSE, fig.align='center', out.width = '100%', fig.cap="\\label{fig3:fig3} Cantidad de enlaces entre líneas formativas"}
+knitr::include_graphics("Gráficos/mm_inter3.png", dpi=NA)
+```
+
+# Análisis entre contenidos
+
+## Subred según el peso
+
+Con el fin de identificar los contenidos repetidos, se filtró la base de enlaces cuando la variable `weight` es igual a 1. De esta manera se obtuvo una red con 92 nodos y 62 enlaces (figura \ref{fig4:fig4}).
+
+```{r fig4,  echo = FALSE, fig.align='center', out.width = '90%', fig.cap="\\label{fig4:fig4} Enlaces entre contenidos con peso 1. El número de intersección de palabras está en rojo sobre cada enlace."}
+knitr::include_graphics("Gráficos/subred_peso1.png", dpi=NA)
+```
+
+Esta *subred* sugiere, por ejemplo que el contenido `369` con el contenido `1126` están relacionados de manera que uno está contenido dentro del otro. 
+
+Ahora buscamos en la base de los nodos las filas con `id = 369` y `id = 1126` para observar todos sus atributos y en particular para comparar los contenidos del texto del atributo `Label`. Primero veamos los atributos de cada nodo. 
+
+Table: Atributos de los nodos 369 y 1126
+
+|   id|Asignatura    |Semestre    | Competencia    |Nivel Dominio Formativo |Ciclo Formativo |Nivel Logro Aprendizaje |Línea Formativa |
+|----:|:-------------|:-----------|---------------:|:-----------------------|:---------------|:-----------------------|:---------------|
+|  369|TSO_104       |3           |               2|Basico                  |Basico          |N2-Comprender           |Disciplinar     |
+| 1126|TSO_136       |4           |               6|Basico                  |Basico          |N2-Comprender           |Investigación   |
+
+Y ahora el texto de cada contenido
+
+|   id|Label                                                                                                                    |
+|----:|:------------------------------------------------------------------------------------------------------------------------|
+|  369|- La relación entre la intervención y la investigación social                                                            |
+| 1126|- Relación entre los ejes de la Intervención Social Fundada con ejemplos de Investigación/Intervención en Trabajo Social |
+
+Este tipo de comparación se puede obtener desde la hoja de cálculo compartida [en este link](https://docs.google.com/spreadsheets/d/e/2PACX-1vSv0SKs6VZTRfHvTiS_1ZlIiMkLs1OL2kh8-ya_DO70KZRw3JazhK1IAdnrBanjNURKnwq4VDbXWcBH/pubhtml?gid=720186339&single=true).
+
+Por último, en esta subred la cantidad de enlaces según línea de formación también es mayor entre la misma línea de formación pero en el caso de la línea de formación `Práctica` hay mayor cantidad de contenidos enlazados con las líneas `Cienacias Sociales` y `Disciplinar`. 
+
+Table: Cantidad de enlaces según línea de formación
+
+|                   | Ciencias Sociales| Disciplinar| Investigación| Politicas Sociales| Práctica|
+|:------------------|-----------------:|-----------:|-------------:|------------------:|--------:|
+|Ciencias Sociales  |                 1|           0|             0|                  1|        0|
+|Disciplinar        |                 0|          12|             1|                  0|        7|
+|Investigación      |                 0|           1|            11|                  0|        7|
+|Politicas Sociales |                 1|           0|             0|                 12|        0|
+|Práctica           |                 0|           7|             7|                  0|       10|
+
+
+## Subred según frase de intersección
+
+En el informe anterior se presentó un gráfico con las frecuencias de frases con más de tres palabras. En este caso, las frases más comunes siguen siendo las encontradas para la línea formativa `Políticas Sociales` pero se agregan algunas de la línea formativa `Investigación`. Por lo que se consideró para el caso de todas la líneas las frases con más de cuatro palabras en común (figura \ref{fig5:fig5})
+
+```{r fig5,  echo = FALSE, fig.align='center', out.width = '80%', fig.cap="\\label{fig5:fig5} El número en cada barra indica la cantidad de enlaces con la frase de intersección correspondiente"}
+knitr::include_graphics("Gráficos/frec_inter4.png", dpi=NA)
+```
+
+Esto proporciona una serie de subredes creadas a partir de la frase de intersección pero ninguna pareció tener contenidos repetidos entre líneas formativas pero sí para cada línea en particular. Por ejemplo, la red que forma la primera frase de la figura \ref{fig5:fig5} contiene nodos únicamente de la línea formativa `Investigación`
+
+```{r fig6,  echo = FALSE, fig.align='center', out.width = '60%', fig.cap="\\label{fig6:fig6} Contenidos con la misma frase en común"}
+knitr::include_graphics("Gráficos/ejemplo_inter.png", dpi=NA)
+```
+
+[En este link](https://docs.google.com/spreadsheets/d/e/2PACX-1vSv0SKs6VZTRfHvTiS_1ZlIiMkLs1OL2kh8-ya_DO70KZRw3JazhK1IAdnrBanjNURKnwq4VDbXWcBH/pubhtml?gid=1052861624&single=true) en hojas de cálculo se puede obtener la lista de los enlaces cuya intersección contiene una frase de la columna `Interseccion` de la hoja `inter3`. 
+
+## Subred según la cantidad de palabras en común
+
+Como último análisis se construyeron subredes de acuerdo al número de palabras en común entre contenidos. 
+
+### Subred con `n_inter` mayor que ocho
+
+Al filtrar la base de enlaces con más de 8 palabras en común se obtiene una red con 52 y 33 enlaces (figura \ref{fig7:fig7}).
+
+```{r fig7,  echo = FALSE, fig.align='center', out.width = '80%', fig.cap="\\label{fig7:fig7} Contenidos con más de 8 palabras en común"}
+knitr::include_graphics("Gráficos/ninter_mas8.png", dpi=NA)
+```
+
+Si nos centramos en los nodos `514` y `268` filtrando la base de nodos para `id = 514` y `id = 268` obtenemos los siguientes atributos
+
+|  id|Asignatura    |Semestre    | Competencia    |Nivel Dominio formativo |Ciclo formativo |Nivel Logro Aprendizaje |Línea Formativa    |
+|---:|:-------------|:-----------|---------------:|:-----------------------|:---------------|:-----------------------|:------------------|
+| 514|TSO_046       |4           |               9|Intermedio              |Profesional     |N3-Aplicar              |Disciplinar        |
+| 268|TSO_139       |5           |               7|Intermedio              |Profesional     |N3-Aplicar              |Politicas Sociales |
+
+y los textos para cada nodo
+
+|  id|Label                                                                                                                                                                                                                                                                                                              |
+|---:|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 514|- Ética del desarrollo: identificar los factores que determinan la denominada nueva pobreza, inequidad como problema central del siglo XXI y de países inmersos en la globalización: brechas socioeconómicas de la población chilena, desigualdad, acceso a bienes, servicios y tecnología (analfabetismo digital) |
+| 268|- Desigualdad, el problema central del siglo XXI y de paises inmersos en la globalizacion: Brechas socioeconomicas de la poblacion chilena segun encuesta CASEN vigente.    
+|
+### Subred con `n_inter` menor que ocho pero con `weight` mayor que 0.8
+
+Esta subred consta de 121 nodos y 77 enlaces
+
+```{r fig8,  echo = FALSE, fig.align='center', out.width = '80%', fig.cap="\\label{fig8:fig8} Contenidos con menos de ocho palabras en común pero con peso mayor a 0.8"}
+knitr::include_graphics("Gráficos/subred_peso08.png", dpi=NA)
+```
+
+Por ejemplo si seleccionamos los nodos `359` y `835` comprobamos que se repite 'Técnicas de escucha activa' 
+
+|  id|Label                                                                                                               |
+|---:|:-------------------------------------------------------------------------------------------------------------------|
+| 359|- Aplicación de técnicas de escucha activa y comunicación asertiva en situaciones específicas de la vida académica. |
+| 835|- Técnicas de escucha activa                                                                                        |
+
+Y comparando sus atributos en la base de nodos,
+
+|  id|Asignatura |Semestre | Competencia|Nivel_Dominio_formativo |Ciclo_formativo |Nivel_Logro_Aprendizaje |Linea_formativa |
+|---:|:----------|:--------|-----------:|:-----------------------|:---------------|:-----------------------|:---------------|
+| 359|TSO_103    |2        |           8|Intermedio              |Basico          |N3-Aplicar              |Disciplinar     |
+| 835|TSO_128    |1        |           8|Basico                  |Basico          |N3-Aplicar              |Práctica        |
+
+se puede concluir en primera instancia que el contenido `359` es una continuación del contenido `835`.
+
+Por otro lado, en esta subred se aprecia la repetición de contenidos dentro de la línea `Práctica` como se puede observar en el siguiente cuadro
+
+|   id|Label                                                             |
+|----:|:-----------------------------------------------------------------|
+|  943|- Presentación de la propuesta en el Taller y Centro de Práctica. |
+| 1038|- Presentación de la propuesta en taller y centro de práctica.    |
+|  955|- Presentación y defensa de resultados                            |
+| 1055|- Presentación y defensa de resultados.                           |
+|  957|- Análisis crítico de los resultados obtenidos                    |
+| 1057|- Análisis crítico de los resultados obtenidos.                   |
+
+y si comparamos su atributos
+
+|   id|Asignatura |Semestre | Competencia|Nivel_Dominio_formativo |Ciclo_formativo |Nivel_Logro_Aprendizaje |Linea_formativa |
+|----:|:----------|:--------|-----------:|:-----------------------|:---------------|:-----------------------|:---------------|
+|  943|TSO_138    |5        |           1|Avanzado                |Profesional     |N5-Evaluar              |Práctica        |
+| 1038|TSO_144    |8        |           2|Avanzado                |Profesional     |N6-Crear                |Práctica        |
+|  955|TSO_138    |5        |           1|Avanzado                |Profesional     |N5-Evaluar              |Práctica        |
+| 1055|TSO_144    |8        |           2|Avanzado                |Profesional     |N6-Crear                |Práctica        |
+|  957|TSO_138    |5        |           1|Avanzado                |Profesional     |N5-Evaluar              |Práctica        |
+| 1057|TSO_144    |8        |           2|Avanzado                |Profesional     |N6-Crear                |Práctica        |
+
+se concluye que la diferencia es según el `logro de aprendizaje` y la `competencia` asociada a cada asignatura . `TSO_138` corresponde a la asignatura *Práctica I - Diagnóstico Social* y `TSO_144` es *Práctica Profesional I*.
+
+# Conclusiones
+
+De acuerdo al análisis de texto de la red construida, se puede concluir que hay repetición de contenidos pero en general cambia la profundización del contenido de acuerdo a las competencias, o al nivel de logro de aprendizaje o el nivel de dominio formativo. 
+
+De los productos requeridos en esta consultoría se obtuvo:
+
+- Análisis del texto entre contenidos.
+- Red de contenidos de asignatura en función del plan de estudio.
+- Identificación de reiteraciones de contenidos.
+
+
+
+
+
+
+
+

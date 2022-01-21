@@ -1,0 +1,159 @@
+---
+title: |
+  Informe Avance Consultoría
+author: Camila Guzmán Olivos
+date: 10 de Enero
+output:
+  bookdown::pdf_document2:
+    toc: no
+header-includes: 
+- |
+    ```{=latex}
+    \usepackage{fancyhdr}
+    \pagestyle{fancy}
+    \fancyhead[L]{Consultoría Universidad Santo Tomás}
+    \usepackage{float}
+    \usepackage[spanish]{babel}
+    \usepackage{multicol}
+    \usepackage{multirow}
+    \usepackage{authblk}
+    %\usepackage[colorlinks=true]{hyperref}
+
+    \hypersetup{
+        colorlinks=true,
+        linkcolor=blue,
+        filecolor=magenta,      
+        urlcolor=blue,
+    }
+    
+    \floatplacement{figure}{H}
+    ```
+
+
+nocite: '@*'
+---
+
+
+# Antecedentes
+
+En el marco del Proceso de autoevaluación de la Escuela de Trabajo Social UST, el equipo de pares acreditadores de Agencia Qualitas señala en el informe de salida lo siguiente:
+
+*"El plan de estudios de la carrera es de reciente implementación (desde 2018) y busca atender algunas deficiencias identificadas en el plan anterior. En particular, **la reiteración de contenidos de algunos cursos**, los retrasos en la titulación, y la carga horaria que era algo excesiva para las muchas estudiantes que debían compatibilizarla con las responsabilidades familiares y laborales. Estas modificaciones fueron posibles pues la carrera desarrolla revisiones permanentes de los procesos de formación, lo cual es reconocido por sus autoridades como una de las virtudes de la carrera, y refleja un compromiso del equipo con la propuesta formativa y por vincularse activamente con estos procesos. En general los profesores valoran este nuevo plan, destacando que las modificaciones recientes permiten un mayor ordenamiento curricular. Se advierte, sin embargo, que aún **no hay evidencia sólida de que estos problemas se hayan solucionado**, por lo que la carrera debe mirar con atención el desarrollo de este plan de estudios" (Informe Qualitas Pag 75)*
+
+La Escuela Nacional da respuesta a este requerimiento incorporando dentro del plan de mejoramiento de la Escuela 2021-2022 una consultoría orienta a la revisión de contenidos de cada uno de las asignaturas involucradas dentro del plan vigente (12-12V). 
+
+# Objetivos
+
+## Objetivo General
+
+Identificar reiteraciones de contenidos en los programas de asignaturas del Plan 12. 
+
+## Objetivos Específicos
+
+OE1: Identificar inserción de contenidos de programas de línea por plan de formación.
+
+OE2: Establecer relaciones entre contenidos considerando sus competencias específicas y líneas formativas del plan de estudios. 
+
+OE3: Identificar reiteraciones de contenidos por Plan de formación, Competencias específicas y Nivel de Dominio Formativos por cada línea de formación del plan 12.
+
+# Productos
+
+De acuerdo con los objetivos de la consultoría se esperan los siguientes productos:
+
+- Análisis documental del plan de estudios, traducción educativa, especificaciones de la carrera, malla curricular y programas de asignatura.
+
+- Levantamiento de redes de contenidos de asignaturas en función al análisis documental al menos al nivel de líneas de formación.
+
+- Desarrollo de una red de contenidos de asignaturas general para el plan de estudios. 
+
+- Identificación de posibles reiteraciones de contenidos de las asignaturas, junto con el análisis de los niveles de logro de aprendizaje y los niveles de dominio formativo de las competencias involucradas. 
+
+
+```{r setup, include = FALSE, echo=FALSE, comment=" "}
+setwd("~/Desktop/Santo Tomás/TSO_analisis/Informe")
+
+library(statnet)
+library(network)
+library(GGally)
+library(tidyverse)
+
+```
+
+# Diseño Metodológico
+
+Según los productos requeridos en esta consultoría se comenzó por construir las bases de datos que nos permitirán levantar la red entre contenidos. 
+
+Estas bases de datos son las que definirán **los nodos y los enlaces** de la red.
+
+## Descripción de las bases
+
+### Base para nodos
+
+La base que contiene los atributos de los nodos presenta las variables descriptivas de los contenidos y los resultados de aprendizaje 
+[(Click aquí para ver la base completa)](https://docs.google.com/spreadsheets/d/16F9aOPpdB7ueKIza4q6CkZKZnHIkSCgF7GuCUD5NrY8/edit?usp=sharing). Estas variables (que llamamos atributos de los nodos) son las siguientes: 
+
+- **id**: Número de identificación de cada contenido o resultado de aprendizaje que fue asignado según el orden de ingreso en la base de datos.
+- **Label**: Texto que describe el contenido o el resultado de apredizaje.
+- **Tipo**: `Contenido` o `R_A` (Resultado de Aprendizaje).
+- **Asignatura**: Código `TSO` de cada asignatura.
+- **Unidad**: `1`, `2` o `3`.
+- **Semestre**: Número entre `1` y `9`.
+- **Competencia**: Número entre `1` y `9` dependiendo de la competencia específica del Perfil de Egreso.
+    - `1`. Diagnosticar necesidades y capacidades de los sujetos de intervención, con el fin de proponer soluciones integrales a los problemas sociales.
+    - `2`. Diseñar, ejecutar y evaluar procesos de intervención social de manera innovadora, para mejorar las condiciones de vida de los diferentes actores sociales.
+    - `3`. Formular, gestionar y evaluar proyectos y programas sociales.
+    - `4`. Implementar, analizar y evaluar políticas sociales a fin de contribuir al desarrollo local y social del país.
+    - `5`. Gestionar recursos y redes sociales para promover intervenciones de calidad.
+    - `6`. Diseñar, ejecutar y difundir investigaciones relevantes en el ámbito de las ciencias sociales, para generar conocimiento pertinente sobre la realidad social.
+    - `7`. Analizar de manera crítica y compleja las diversas realidades sociales a la luz de los distintos enfoques teóricos de las ciencias sociales y humanidades.
+    - `8`. Contribuir al desarrollo disciplinario apropiándose de una identidad como trabajadores sociales, asumiendo los desafíos presentes y futuros de la profesión.
+    - `9`. Actuar sobre la base de los principios éticos profesionales del Trabajo Social, con especial énfasis en el desarrollo de actitud proactiva, empática y asertiva, responsabilidad social, liderazgo de procesos de transformación social y la valoración de las capacidades del ser humano.
+- **Nivel_Dominio_Formativo**: `Basico`, `Intermedio` o `Avanzado`.
+- **Ciclo_formativo**: `Básico` o `Profesional`.
+- **Nivel_logro_Aprendizaje:** Códigos alpha-numéricos según taxonomía de Anderson: 
+    - `N1 – Memorizar` 
+    - `N2 – Comprender` 
+    - `N3 – Aplicar` 
+    - `N4 – Analizar`
+    - `N5 – Evaluar`
+    - `N6 – Crear`
+
+- **Línea_Formativa:**: `Ciencias Sociales`, `Disciplinar`, `Investigación`, `Políticas Sociales` y `Práctica`.
+
+Estos atributos se escogieron con el fin de comparar los contenidos según las competencias específicas y líneas formativas del plan de estudios como lo indica el OE2.
+
+### Base para enlaces
+
+Esta base es la que define los enlaces de la red. [(Ver base completa aquí)](https://docs.google.com/spreadsheets/d/e/2PACX-1vSEUdYAtJ_-Y4VsJeSbi00hZZ2sVNLr7ga4scd0NlYBCY6TBeYeU-qV6S2-WjBkU0yd3mMSXyrNQssR/pubhtml?gid=0&amp;single=true&amp;widget=true&amp;headers=false)
+
+Los atributos referentes a estos enlaces son 
+
+- **Source**: Corresponde al `id` del nodo (contenido o resultado de aprendizaje) desde donde comienza el enlace.
+
+- **Target**: Corresponde al `id` del nodo donde termina el enlace.
+
+- **weight**: Corresponde a un peso asignado según la intersección de palabras entre contenidos y se calcula como
+
+$$\dfrac{|\operatorname{label(\text{Source}) \cap \operatorname{label}(\text{Target})}|}{\min(|\operatorname{label(\text{Source})}|,|\operatorname{label(\text{Target})}|)}$$
+
+
+- **Interseccion**: Palabras en común que tienen los contenidos involucrados en `Source` y `Target`.
+
+- **n_inter**: Cantidad de palabras en común que tienen los contenidos definidos en `Source` y `Target`.
+
+La base nos entrega los `id` de los contenidos que están relacionados y qué tipo de relación tienen.
+
+## Red Inicial
+
+La red se conforma con dos tipos de objetos: los **nodos** y los **enlaces**. En este caso, los nodos son los resultados de aprendizaje y los contenidos y se forman enlaces entre nodos si es que dos de los nodos cumplen alguna relación. El foco principal para crear la red es definir qué relaciones generan un enlace entre nodos. Para esto se diferenciaron dos tipos de enlaces: 
+
+- Según lo conversado al inicio de la consultoría, se consideró una primera selección de enlaces generado por los contenidos pertenecientes a cada resultado de aprendizaje de las asignaturas de las líneas de formación definidas en el Plan de Estudio. \newline En el informe anterior se presentó solo la línea de Políticas Sociales
+\ref{fig:fig1}. La figura \ref{fig:fig1.2} describe los **enlaces de pertenencia** para cada línea de formación diferenciando entre asignaturas y Resultados de aprendizaje (círculo si el nodo contiene el texto de un contenido).
+
+```{r fig1,  echo = FALSE, fig.align='center', fig.height=0.05, fig.width=0.1,fig.cap="\\label{fig1:fig1} Enlaces de pertenencia diferenciado por asignatura"}
+knitr::include_graphics("~/Desktop/Santo Tomás/TSO_analisis/Imágenes/Politicas_Sociales.png", dpi=NA)
+```
+
+
+
+
